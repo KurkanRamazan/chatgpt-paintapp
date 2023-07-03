@@ -35,6 +35,10 @@ function startDrawing(event) {
     event.clientX - canvas.offsetLeft,
     event.clientY - canvas.offsetTop
   );
+
+  if (toolbarActions[activeTool].drawStart) {
+    toolbarActions[activeTool].drawStart(ctx, event);
+  }
 }
 
 // Function to draw
@@ -58,4 +62,14 @@ function changeLineWidth(event) {
 function changeStrokeColor(event) {
   strokeColor = event.target.value;
 }
+
+// Clear the canvas with solid white color
+function clearCanvas() {
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+// Call the clearCanvas function to clear the canvas initially
+clearCanvas();
+
 activateTool("pen");
