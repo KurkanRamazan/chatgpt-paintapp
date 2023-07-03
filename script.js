@@ -23,7 +23,7 @@ var strokeColor = strokeColorInput.value;
 
 // Set the initial scale
 var scale = 1;
-var zoomFactor = 1.2;
+var zoomFactor = 1.05;
 
 // Event listeners for drawing
 canvas.addEventListener("mousedown", startDrawing);
