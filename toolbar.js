@@ -19,14 +19,21 @@ function selectTool(event) {
   // Get the selected tool from the data-tool attribute
   var selectedTool = event.target.getAttribute("data-tool");
 
-  // Call the action associated with the selected tool
-  toolbarActions[selectedTool]();
+  // Update the activeTool variable
+  activeTool = selectedTool;
 }
 // Dictionary to map toolbar buttons to actions
 var toolbarActions = {
-  pen: function () {
-    console.log("Pen selected");
-    // Add code for pen tool action
+  pen: function (ctx, event) {
+    ctx.lineTo(
+      event.clientX - ctx.canvas.offsetLeft,
+      event.clientY - ctx.canvas.offsetTop
+    );
+    ctx.lineWidth = lineWidth;
+    ctx.strokeStyle = strokeColor;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.stroke();
   },
   eraser: function () {
     console.log("Eraser selected");
@@ -37,3 +44,6 @@ var toolbarActions = {
     // Add code for shape tool action
   },
 };
+
+// Initialize the active tool as "pen"
+var activeTool = "pen";

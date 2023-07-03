@@ -26,15 +26,7 @@ function startDrawing(event) {
 // Function to draw
 function draw(event) {
   if (isDrawing) {
-    ctx.lineTo(
-      event.clientX - canvas.offsetLeft,
-      event.clientY - canvas.offsetTop
-    );
-    ctx.lineWidth = lineWidth;
-    ctx.strokeStyle = strokeColor;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.stroke();
+    toolbarActions[activeTool](ctx, event);
   }
 }
 
