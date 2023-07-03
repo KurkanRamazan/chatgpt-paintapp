@@ -20,6 +20,9 @@ canvas.addEventListener("mousedown", startDrawing);
 canvas.addEventListener("mousemove", draw);
 canvas.addEventListener("mouseup", stopDrawing);
 canvas.addEventListener("mouseout", stopDrawing);
+canvas.addEventListener("mousemove", function (event) {
+  updateSizeIndicatorPosition(event);
+});
 
 // Attach the change event listener to the lineWidth select element
 lineWidthSelect.addEventListener("change", changeLineWidth);
@@ -68,7 +71,18 @@ function clearCanvas() {
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
-
+function updateSizeIndicatorPosition(event) {
+  const x = event.clientX;
+  const y = event.clientY;
+  var sizeIndicator = document.getElementById("sizeIndicator");
+  var indicatorSize = lineWidth * 1.6;
+  sizeIndicator.style.left = x + "px";
+  sizeIndicator.style.top = y + "px";
+  sizeIndicator.style.width = indicatorSize + "px";
+  sizeIndicator.style.height = indicatorSize + "px";
+  sizeIndicator.style.marginLeft = -indicatorSize / 2 + "px";
+  sizeIndicator.style.marginTop = -indicatorSize / 2 + "px";
+}
 // Call the clearCanvas function to clear the canvas initially
 clearCanvas();
 

@@ -28,6 +28,15 @@
             background-color: #ccc;
         }
     </style>
+    <style>
+        #sizeIndicator {
+            position: absolute;
+            border: 1px solid black;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 100;
+        }
+    </style>
 </head>
 
 <body>
@@ -61,6 +70,7 @@
         <input type="color" id="strokeColor" value="#000000">
     </div>
     <canvas id="paintCanvas" width="800" height="600"></canvas>
+    <div id="sizeIndicator"></div>
     <script src="toolbar.js"></script>
     <script src="script.js"></script>
 </body>
