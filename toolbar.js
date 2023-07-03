@@ -24,28 +24,34 @@ function selectTool(event) {
 }
 // Dictionary to map toolbar buttons to actions
 var toolbarActions = {
-  pen: function (ctx, event) {
-    ctx.lineTo(
-      event.clientX - ctx.canvas.offsetLeft,
-      event.clientY - ctx.canvas.offsetTop
-    );
-    ctx.lineWidth = lineWidth;
-    ctx.strokeStyle = strokeColor;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.stroke();
+  pen: {
+    draw: function (ctx, event) {
+      ctx.lineTo(
+        event.clientX - ctx.canvas.offsetLeft,
+        event.clientY - ctx.canvas.offsetTop
+      );
+      ctx.lineWidth = lineWidth;
+      ctx.strokeStyle = strokeColor;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.stroke();
+    },
   },
-  eraser: function (ctx, event) {
-    ctx.clearRect(
-      event.clientX - ctx.canvas.offsetLeft - lineWidth / 2,
-      event.clientY - ctx.canvas.offsetTop - lineWidth / 2,
-      lineWidth,
-      lineWidth
-    );
+  eraser: {
+    draw: function (ctx, event) {
+      ctx.clearRect(
+        event.clientX - ctx.canvas.offsetLeft - lineWidth / 2,
+        event.clientY - ctx.canvas.offsetTop - lineWidth / 2,
+        lineWidth,
+        lineWidth
+      );
+    },
   },
-  shapes: function () {
-    console.log("Shapes selected");
-    // Add code for shape tool action
+  shapes: {
+    draw: function (ctx, event) {
+      console.log("Shapes selected");
+      // Add code for shape tool action
+    },
   },
 };
 

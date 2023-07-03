@@ -26,7 +26,7 @@ function startDrawing(event) {
 // Function to draw
 function draw(event) {
   if (isDrawing) {
-    toolbarActions[activeTool](ctx, event);
+    toolbarActions[activeTool].draw(ctx, event);
   }
 }
 
