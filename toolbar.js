@@ -35,9 +35,13 @@ var toolbarActions = {
     ctx.lineJoin = "round";
     ctx.stroke();
   },
-  eraser: function () {
-    console.log("Eraser selected");
-    // Add code for eraser tool action
+  eraser: function (ctx, event) {
+    ctx.clearRect(
+      event.clientX - ctx.canvas.offsetLeft - lineWidth / 2,
+      event.clientY - ctx.canvas.offsetTop - lineWidth / 2,
+      lineWidth,
+      lineWidth
+    );
   },
   shapes: function () {
     console.log("Shapes selected");
