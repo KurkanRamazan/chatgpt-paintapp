@@ -8,6 +8,15 @@ toolbarButtons.forEach(function (button) {
 
 // Function to handle tool selection
 function selectTool(event) {
+  // Get the selected tool from the data-tool attribute
+  var selectedTool = event.target.getAttribute("data-tool");
+
+  // Check if the selected tool has a command function
+  if (typeof toolbarActions[selectedTool].command === "function") {
+    // Call the command function for the selected tool
+    toolbarActions[selectedTool].command();
+    return; // Stop executing the rest of the function
+  }
   // Remove active class from all buttons
   toolbarButtons.forEach(function (button) {
     button.classList.remove("active");
@@ -15,9 +24,6 @@ function selectTool(event) {
 
   // Add active class to the clicked button
   event.target.classList.add("active");
-
-  // Get the selected tool from the data-tool attribute
-  var selectedTool = event.target.getAttribute("data-tool");
   activateTool(selectedTool);
 }
 function activateTool(selectedTool) {
@@ -36,10 +42,8 @@ function activateTool(selectedTool) {
 var toolbarActions = {
   pen: {
     draw: function (ctx, event) {
-      ctx.lineTo(
-        event.clientX - ctx.canvas.offsetLeft,
-        event.clientY - ctx.canvas.offsetTop
-      );
+      var { x, y } = calculateScaledCoordinates(event);
+      ctx.lineTo(x, y);
       ctx.lineWidth = lineWidth;
       ctx.strokeStyle = strokeColor;
       ctx.lineCap = "round";
@@ -50,9 +54,10 @@ var toolbarActions = {
   },
   eraser: {
     draw: function (ctx, event) {
+      var { x, y } = calculateScaledCoordinates(event);
       ctx.clearRect(
-        event.clientX - ctx.canvas.offsetLeft - lineWidth / 2,
-        event.clientY - ctx.canvas.offsetTop - lineWidth / 2,
+        x - lineWidth / 2,
+        y - lineWidth / 2,
         lineWidth,
         lineWidth
       );
@@ -71,6 +76,8 @@ var toolbarActions = {
       // NOOP
     },
     drawStart: function (ctx, event) {
+      var { x, y } = calculateScaledCoordinates(event);
+
       var imageData = ctx.getImageData(
         0,
         0,
@@ -80,8 +87,8 @@ var toolbarActions = {
       var pixelData = imageData.data;
 
       // Get the starting point for flood fill
-      var startX = event.clientX - ctx.canvas.offsetLeft;
-      var startY = event.clientY - ctx.canvas.offsetTop;
+      var startX = x;
+      var startY = y;
       var startPixel = (startY * ctx.canvas.width + startX) * 4;
       var startColor = [
         pixelData[startPixel],
@@ -142,6 +149,23 @@ var toolbarActions = {
     },
 
     cursorImage: "./assets/toolbar-actions/fill/images/cursor-icon.png",
+  },
+  zoomIn: {
+    command: function () {
+      setScale(scale * zoomFactor);
+    },
+  },
+
+  zoomOut: {
+    command: function () {
+      // Decrease the scale by the zoom factor
+      setScale(scale / zoomFactor);
+    },
+  },
+  zoomReset: {
+    command: function () {
+      setScale(1);
+    },
   },
 };
 

@@ -8,12 +8,19 @@ var lineWidthSelect = document.getElementById("lineWidth");
 // Get the strokeColor input element
 var strokeColorInput = document.getElementById("strokeColor");
 
+// Get the scale indicator element
+var scaleIndicator = document.getElementById("scaleIndicator");
+
 // Set initial drawing properties
 var isDrawing = false;
 var lineWidth = parseInt(lineWidthSelect.value);
 
 // Set the initial stroke color
 var strokeColor = strokeColorInput.value;
+
+// Set the initial scale
+var scale = 1;
+var zoomFactor = 1.2;
 
 // Event listeners for drawing
 canvas.addEventListener("mousedown", startDrawing);
@@ -33,11 +40,9 @@ strokeColorInput.addEventListener("change", changeStrokeColor);
 // Function to start drawing
 function startDrawing(event) {
   isDrawing = true;
+  var { x, y } = calculateScaledCoordinates(event);
   ctx.beginPath();
-  ctx.moveTo(
-    event.clientX - canvas.offsetLeft,
-    event.clientY - canvas.offsetTop
-  );
+  ctx.moveTo(x, y);
 
   if (toolbarActions[activeTool].drawStart) {
     toolbarActions[activeTool].drawStart(ctx, event);
@@ -47,7 +52,8 @@ function startDrawing(event) {
 // Function to draw
 function draw(event) {
   if (isDrawing) {
-    toolbarActions[activeTool].draw(ctx, event);
+    if (toolbarActions[activeTool].draw)
+      toolbarActions[activeTool].draw(ctx, event);
   }
 }
 
@@ -82,6 +88,71 @@ function updateSizeIndicatorPosition(event) {
   sizeIndicator.style.height = indicatorSize + "px";
   sizeIndicator.style.marginLeft = -indicatorSize / 2 + "px";
   sizeIndicator.style.marginTop = -indicatorSize / 2 + "px";
+}
+function switchTab(tabId) {
+  // Hide all tab contents
+  var tabs = document.getElementsByClassName("tab");
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].classList.remove("active");
+  }
+
+  // Hide all tab buttons
+  var tabButtons = document.getElementsByClassName("tabButton");
+  for (var i = 0; i < tabButtons.length; i++) {
+    tabButtons[i].classList.remove("active");
+  }
+
+  // Show the selected tab content
+  document.getElementById(tabId).classList.add("active");
+
+  // Show the selected tab button as active
+  event.currentTarget.classList.add("active");
+}
+function redrawCanvas() {
+  // Create an offscreen canvas to store the original content
+  var originalCanvas = document.createElement("canvas");
+  originalCanvas.width = canvas.width;
+  originalCanvas.height = canvas.height;
+  var originalCtx = originalCanvas.getContext("2d");
+
+  // Store the original content on the offscreen canvas
+  originalCtx.drawImage(canvas, 0, 0);
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.save();
+  ctx.scale(scale, scale);
+  ctx.drawImage(originalCanvas, 0, 0);
+  ctx.restore();
+
+  // Apply the scale to the line width
+  var scaledLineWidth = lineWidth * scale;
+  lineWidth = scaledLineWidth;
+}
+// Function to update the scale indicator
+function updateScaleIndicator() {
+  scaleIndicator.textContent = "Scale: " + scale.toFixed(2) + "x";
+}
+function calculateScaledCoordinates(event) {
+  var rect = canvas.getBoundingClientRect();
+  var mouseX = event.clientX - rect.left - canvas.clientLeft;
+  var mouseY = event.clientY - rect.top - canvas.clientTop;
+
+  var scaledX = mouseX / scale;
+  var scaledY = mouseY / scale;
+
+  return { x: scaledX, y: scaledY };
+}
+function updateCanvasTransform() {
+  canvas.style.transform = `scale(${scale})`;
+  var marginTop = (canvas.offsetHeight * scale - canvas.offsetHeight) / 2;
+  var marginLeft = (canvas.offsetWidth * scale - canvas.offsetWidth) / 2;
+  canvas.style.marginTop = `${marginTop}px`;
+  canvas.style.marginLeft = `${marginLeft}px`;
+}
+function setScale(s){
+  scale = s;
+  updateCanvasTransform();
+  updateScaleIndicator();
 }
 // Call the clearCanvas function to clear the canvas initially
 clearCanvas();
