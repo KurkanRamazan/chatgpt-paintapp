@@ -1,19 +1,17 @@
-// Get the toolbar buttons
-var penButton = document.getElementById("penTool");
-var eraserButton = document.getElementById("eraserTool");
-var shapeButton = document.getElementById("shapeTool");
+// Find all toolbar buttons with the "toolbar-command" class
+var toolbarButtons = document.querySelectorAll(".toolbar-command");
 
-// Event listeners for button clicks
-penButton.addEventListener("click", selectTool);
-eraserButton.addEventListener("click", selectTool);
-shapeButton.addEventListener("click", selectTool);
+// Loop through each toolbar button and attach the click event listener
+toolbarButtons.forEach(function (button) {
+  button.addEventListener("click", selectTool);
+});
 
 // Function to handle tool selection
 function selectTool(event) {
   // Remove active class from all buttons
-  penButton.classList.remove("active");
-  eraserButton.classList.remove("active");
-  shapeButton.classList.remove("active");
+  toolbarButtons.forEach(function (button) {
+    button.classList.remove("active");
+  });
 
   // Add active class to the clicked button
   event.target.classList.add("active");
@@ -21,13 +19,21 @@ function selectTool(event) {
   // Get the selected tool from the data-tool attribute
   var selectedTool = event.target.getAttribute("data-tool");
 
-  // You can add logic here to handle specific tool selection
-  if (selectedTool === "eraser") {
-    // Implement eraser functionality
-    alert("Eraser selected");
-    // Add your eraser code here
-  } else {
-    // Handle other tools
-    alert("Tool selected: " + selectedTool);
-  }
+  // Call the action associated with the selected tool
+  toolbarActions[selectedTool]();
 }
+// Dictionary to map toolbar buttons to actions
+var toolbarActions = {
+  pen: function () {
+    console.log("Pen selected");
+    // Add code for pen tool action
+  },
+  eraser: function () {
+    console.log("Eraser selected");
+    // Add code for eraser tool action
+  },
+  shapes: function () {
+    console.log("Shapes selected");
+    // Add code for shape tool action
+  },
+};
