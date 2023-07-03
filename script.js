@@ -34,3 +34,4 @@ function draw(event) {
 function stopDrawing() {
   isDrawing = false;
 }
+activateTool("pen");

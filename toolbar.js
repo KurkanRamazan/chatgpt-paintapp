@@ -18,9 +18,19 @@ function selectTool(event) {
 
   // Get the selected tool from the data-tool attribute
   var selectedTool = event.target.getAttribute("data-tool");
-
+  activateTool(selectedTool);
+}
+function activateTool(selectedTool) {
   // Update the activeTool variable
   activeTool = selectedTool;
+
+  // Set the cursor image for the selected tool
+  var cursorImage = toolbarActions[activeTool].cursorImage;
+  if (cursorImage) {
+    canvas.style.cursor = `url(${cursorImage}), auto`;
+  } else {
+    canvas.style.cursor = "default";
+  }
 }
 // Dictionary to map toolbar buttons to actions
 var toolbarActions = {
@@ -36,6 +46,7 @@ var toolbarActions = {
       ctx.lineJoin = "round";
       ctx.stroke();
     },
+    cursorImage: "./assets/toolbar-actions/pen/images/cursor-icon.png",
   },
   eraser: {
     draw: function (ctx, event) {
@@ -46,12 +57,14 @@ var toolbarActions = {
         lineWidth
       );
     },
+    cursorImage: "./assets/toolbar-actions/eraser/images/cursor-icon.png",
   },
   shapes: {
     draw: function (ctx, event) {
       console.log("Shapes selected");
       // Add code for shape tool action
     },
+    cursorImage: null,
   },
 };
 
