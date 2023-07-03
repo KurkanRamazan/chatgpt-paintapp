@@ -18,5 +18,16 @@ function selectTool(event) {
   // Add active class to the clicked button
   event.target.classList.add("active");
 
+  // Get the selected tool from the data-tool attribute
+  var selectedTool = event.target.getAttribute("data-tool");
+
   // You can add logic here to handle specific tool selection
+  if (selectedTool === "eraser") {
+    // Implement eraser functionality
+    alert("Eraser selected");
+    // Add your eraser code here
+  } else {
+    // Handle other tools
+    alert("Tool selected: " + selectedTool);
+  }
 }
