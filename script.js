@@ -11,6 +11,9 @@ var strokeColorInput = document.getElementById("strokeColor");
 // Get the scale indicator element
 var scaleIndicator = document.getElementById("scaleIndicator");
 
+// Get the zoomSlider element
+var zoomSlider = document.getElementById("zoom-slider");
+
 // Set initial drawing properties
 var isDrawing = false;
 var lineWidth = parseInt(lineWidthSelect.value);
@@ -29,6 +32,7 @@ canvas.addEventListener("mouseup", stopDrawing);
 canvas.addEventListener("mouseout", stopDrawing);
 canvas.addEventListener("mousemove", function (event) {
   updateSizeIndicatorPosition(event);
+  updateMousePosition(event);
 });
 
 // Attach the change event listener to the lineWidth select element
@@ -36,6 +40,8 @@ lineWidthSelect.addEventListener("change", changeLineWidth);
 
 // Attach the change event listener to the strokeColor input element
 strokeColorInput.addEventListener("change", changeStrokeColor);
+
+zoomSlider.addEventListener("input", handleZoomSlider);
 
 // Function to start drawing
 function startDrawing(event) {
@@ -149,12 +155,35 @@ function updateCanvasTransform() {
   canvas.style.marginTop = `${marginTop}px`;
   canvas.style.marginLeft = `${marginLeft}px`;
 }
-function setScale(s){
+function setScale(s) {
   scale = s;
+  zoomSlider.value = s;
   updateCanvasTransform();
   updateScaleIndicator();
+}
+function updateMousePosition(event) {
+  var rect = canvas.getBoundingClientRect();
+  var mouseX = event.clientX - rect.left;
+  var mouseY = event.clientY - rect.top;
+  var scaledX = mouseX / scale;
+  var scaledY = mouseY / scale;
+
+  // Update the mouse position display
+  var mousePosition = document.getElementById("mouse-position");
+  mousePosition.textContent = `M: (${scaledX.toFixed(
+    2
+  )}, ${scaledY.toFixed(2)})`;
+}
+function updateCanvasSize() {
+  var canvasSize = document.getElementById("canvas-size");
+  canvasSize.textContent = `C: ${canvas.width}x${canvas.height}`;
+}
+function handleZoomSlider(event) {
+  var newScale = parseFloat(event.target.value);
+  setScale(newScale);
 }
 // Call the clearCanvas function to clear the canvas initially
 clearCanvas();
 
 activateTool("pen");
+updateCanvasSize();
