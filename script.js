@@ -5,10 +5,15 @@ var ctx = canvas.getContext("2d");
 // Get the lineWidth select element
 var lineWidthSelect = document.getElementById("lineWidth");
 
+// Get the strokeColor input element
+var strokeColorInput = document.getElementById("strokeColor");
+
 // Set initial drawing properties
 var isDrawing = false;
 var lineWidth = parseInt(lineWidthSelect.value);
-var strokeColor = "#000000";
+
+// Set the initial stroke color
+var strokeColor = strokeColorInput.value;
 
 // Event listeners for drawing
 canvas.addEventListener("mousedown", startDrawing);
@@ -18,6 +23,9 @@ canvas.addEventListener("mouseout", stopDrawing);
 
 // Attach the change event listener to the lineWidth select element
 lineWidthSelect.addEventListener("change", changeLineWidth);
+
+// Attach the change event listener to the strokeColor input element
+strokeColorInput.addEventListener("change", changeStrokeColor);
 
 // Function to start drawing
 function startDrawing(event) {
@@ -44,5 +52,10 @@ function stopDrawing() {
 // Function to handle line width change
 function changeLineWidth(event) {
   lineWidth = parseInt(event.target.value);
+}
+
+// Function to handle stroke color change
+function changeStrokeColor(event) {
+  strokeColor = event.target.value;
 }
 activateTool("pen");
