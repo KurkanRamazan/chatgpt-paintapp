@@ -1,6 +1,12 @@
 // Get the canvas element
 var canvas = document.getElementById("paintCanvas");
 var ctx = canvas.getContext("2d");
+var overlayCanvas = document.getElementById("overlay-canvas");
+var overlayCtx = overlayCanvas.getContext("2d");
+
+// Set the overlay canvas size to match the main canvas size
+overlayCanvas.width = canvas.width;
+overlayCanvas.height = canvas.height;
 
 // Get the lineWidth select element
 var lineWidthSelect = document.getElementById("lineWidth");
@@ -64,8 +70,12 @@ function draw(event) {
 }
 
 // Function to stop drawing
-function stopDrawing() {
+function stopDrawing(event) {
   isDrawing = false;
+
+  if (toolbarActions[activeTool].drawEnd) {
+    toolbarActions[activeTool].drawEnd(ctx, event);
+  }
 }
 
 // Function to handle line width change
@@ -155,10 +165,18 @@ function updateCanvasTransform() {
   canvas.style.marginTop = `${marginTop}px`;
   canvas.style.marginLeft = `${marginLeft}px`;
 }
+function updateOverlayCanvasTransform() {
+  overlayCanvas.style.transform = `scale(${scale})`;
+  var marginTop = (overlayCanvas.offsetHeight * scale - overlayCanvas.offsetHeight) / 2;
+  var marginLeft = (overlayCanvas.offsetWidth * scale - overlayCanvas.offsetWidth) / 2;
+  overlayCanvas.style.marginTop = `${marginTop}px`;
+  overlayCanvas.style.marginLeft = `${marginLeft}px`;
+}
 function setScale(s) {
   scale = s;
   zoomSlider.value = s;
   updateCanvasTransform();
+  updateOverlayCanvasTransform();
   updateScaleIndicator();
 }
 function updateMousePosition(event) {
@@ -170,9 +188,9 @@ function updateMousePosition(event) {
 
   // Update the mouse position display
   var mousePosition = document.getElementById("mouse-position");
-  mousePosition.textContent = `M: (${scaledX.toFixed(
+  mousePosition.textContent = `M: (${scaledX.toFixed(2)}, ${scaledY.toFixed(
     2
-  )}, ${scaledY.toFixed(2)})`;
+  )})`;
 }
 function updateCanvasSize() {
   var canvasSize = document.getElementById("canvas-size");
@@ -181,6 +199,16 @@ function updateCanvasSize() {
 function handleZoomSlider(event) {
   var newScale = parseFloat(event.target.value);
   setScale(newScale);
+}
+function showOverlayCanvas() {
+  hideOverlayCanvas();
+  overlayCanvas.classList.remove("active");
+  overlayCanvas.classList.add("active");
+  overlayCanvas.style.top = `${canvas.offsetTop}px`;
+  overlayCanvas.style.left = `${canvas.offsetLeft}px`;
+}
+function hideOverlayCanvas() {
+  overlayCanvas.classList.remove("active");
 }
 // Call the clearCanvas function to clear the canvas initially
 clearCanvas();

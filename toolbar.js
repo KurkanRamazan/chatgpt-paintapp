@@ -27,6 +27,8 @@ function selectTool(event) {
   activateTool(selectedTool);
 }
 function activateTool(selectedTool) {
+  var oldTool = toolbarActions[activeTool];
+  if (oldTool.beforeChange) oldTool.beforeChange();
   // Update the activeTool variable
   activeTool = selectedTool;
 
@@ -55,12 +57,19 @@ var toolbarActions = {
   eraser: {
     draw: function (ctx, event) {
       var { x, y } = calculateScaledCoordinates(event);
-      ctx.clearRect(
-        x - lineWidth / 2,
-        y - lineWidth / 2,
-        lineWidth,
-        lineWidth
-      );
+      ctx.lineTo(x, y);
+      ctx.lineWidth = lineWidth;
+      ctx.strokeStyle = strokeColor;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.stroke();
+    },
+    drawStart() {
+      this.oldColor = strokeColor;
+      strokeColor = "#ffffff";
+    },
+    beforeChange() {
+      strokeColor = this.oldColor;
     },
     cursorImage: "./assets/toolbar-actions/eraser/images/cursor-icon.png",
   },
@@ -165,6 +174,133 @@ var toolbarActions = {
   zoomReset: {
     command: function () {
       setScale(1);
+    },
+  },
+
+  select: {
+    drawStart: function (ctx, event) {
+      showOverlayCanvas();
+      var { x, y } = calculateScaledCoordinates(event);
+      this.startX = x;
+      this.startY = y;
+      this.selecting = true;
+    },
+    drawEnd: function (ctx, event) {
+      if (!this.selecting) return;
+      this.selecting = false;
+      this.drawGhost(overlayCtx, event);
+    },
+    draw: function (ctx, event) {
+      this.drawGhost(overlayCtx, event);
+    },
+    drawGhost: function (ctx, event) {
+      var { x, y } = calculateScaledCoordinates(event);
+      var startX = this.startX;
+      var startY = this.startY;
+      var endX = x;
+      var endY = y;
+      if (startX > endX) {
+        var t = startX;
+        startX = endX;
+        endX = t;
+      }
+      if (startY > endY) {
+        var t = startY;
+        startY = endY;
+        endY = t;
+      }
+
+      ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+      ctx.beginPath();
+      ctx.rect(startX, startY, endX - startX, endY - startY);
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = "#000000";
+      ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+      ctx.fill();
+      ctx.stroke();
+      this.selectedRect = {
+        x: startX,
+        y: startY,
+        width: endX - startX,
+        height: endY - startY,
+        endX,
+        endY,
+      };
+    },
+    beforeChange() {
+      hideOverlayCanvas();
+      this.selectedRect = false;
+    },
+    cursorImage: "./assets/toolbar-actions/select/images/cursor-icon.png",
+  },
+  copy: {
+    command() {
+      if (!toolbarActions.select.selectedRect) return;
+      this.copyAsImage();
+    },
+    getCopyCanvas() {
+      if (!toolbarActions.select.selectedRect) return;
+      // Get the selected area coordinates
+      var { x, y, width, height } = toolbarActions.select.selectedRect; //this.getSelectedArea();
+
+      // Create a temporary canvas and context to hold the selected area
+      var tempCanvas = document.createElement("canvas");
+      var tempCtx = tempCanvas.getContext("2d");
+
+      // Set the dimensions of the temporary canvas
+      tempCanvas.width = width;
+      tempCanvas.height = height;
+      // Copy the selected area from the main canvas to the temporary canvas
+      tempCtx.drawImage(canvas, x, y, width, height, 0, 0, width, height);
+      return tempCanvas;
+    },
+    copyAsText() {
+      var tempCanvas = this.getCopyCanvas();
+      if (!tempCanvas) return;
+
+      // Convert the selected area on the temporary canvas to a data URL
+      var dataURL = tempCanvas.toDataURL();
+
+      // Copy the data URL to the clipboard
+      navigator.clipboard
+        .writeText(dataURL)
+        .then(function () {
+          console.log("Selected area copied to clipboard.");
+        })
+        .catch(function (error) {
+          console.error("Failed to copy selected area to clipboard:", error);
+          alert(error);
+        });
+    },
+    copyAsImage() {
+      var tempCanvas = this.getCopyCanvas();
+      if (!tempCanvas) return;
+
+      //tested on chrome 76
+      tempCanvas.toBlob(function (blob) {
+        const item = new ClipboardItem({ "image/png": blob });
+        navigator.clipboard
+          .write([item])
+          .then(function () {
+            console.log("Selected area copied to clipboard.");
+          })
+          .catch(function (error) {
+            console.error("Failed to copy selected area to clipboard:", error);
+            alert(error);
+          });
+      });
+    },
+    getSelectedArea() {
+      var rect = overlayCanvas.getBoundingClientRect();
+      var selectionRect = toolbarActions.select.selectedRect;
+      var startX = (selectionRect.x - rect.left) / scale;
+      var startY = (selectionRect.y - rect.top) / scale;
+      var endX = (selectionRect.endX - rect.left) / scale;
+      var endY = (selectionRect.endY - rect.top) / scale;
+      var width = endX - startX;
+      var height = endY - startY;
+
+      return { x: startX, y: startY, width: width, height: height };
     },
   },
 };

@@ -22,7 +22,7 @@
         .toolbar button {
             background-color: #ddd;
             border: none;
-            padding: 8px 16px;
+            padding: 8px 8px;
             font-size: 16px;
             cursor: pointer;
             border-radius: 4px;
@@ -30,7 +30,7 @@
         }
 
         .toolbar button.active {
-            background-color: #ccc;
+            background-color: hsl(229, 82%, 82%);
         }
     </style>
     <style>
@@ -141,6 +141,19 @@
             margin-right: 10px;
         }
     </style>
+    <style>
+        .overlay-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            visibility: hidden;
+        }
+
+        .overlay-canvas.active {
+            visibility: visible;
+        }
+    </style>
 </head>
 
 <body>
@@ -154,10 +167,12 @@
     <div id="toolbarTab" class="tab active">
         <div class="toolbar">
             <!-- Main toolbar content -->
+            <button id="copyButton" class="toolbar-command" data-tool="copy">Copy</button>
             <button id="penTool" class="toolbar-command active" data-tool="pen">Pen</button>
             <button id="eraserTool" class="toolbar-command " data-tool="eraser">Eraser</button>
             <button id="shapeTool" class="toolbar-command " data-tool="shapes">Shapes</button>
             <button id="fillTool" class="toolbar-command" data-tool="fill">Fill</button>
+            <button id="selectTool" class="toolbar-command" data-tool="select">Select</button>
             <!-- Add more buttons for additional tools if needed -->
             <label for="lineWidth">Line Width:</label>
             <select id="lineWidth">
@@ -195,7 +210,10 @@
         </div>
     </div>
     <br />
-    <canvas id="paintCanvas" width="800" height="600"></canvas>
+    <div style="position: relative;;">
+        <canvas id="paintCanvas" width="800" height="600"></canvas>
+        <canvas id="overlay-canvas" width="800" height="600" class="overlay-canvas"></canvas>
+    </div>
     <div id="status-bar" class="status-bar">
         <span id="mouse-position" class="mouse-position"></span>
         <span id="canvas-size" class="canvas-size"></span>
