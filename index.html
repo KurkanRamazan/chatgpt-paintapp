@@ -2,6 +2,7 @@
 <html>
 
 <head>
+    <base href="." target="_blank">
     <title>HTML5 Canvas Paint</title>
     <style>
         html,
@@ -34,7 +35,7 @@
         }
     </style>
     <style>
-        #sizeIndicator {
+        #bush-size-indicator {
             position: absolute;
             border: 1px solid black;
             border-radius: 50%;
@@ -157,58 +158,48 @@
 </head>
 
 <body>
-    <div class="tabs">
-        <!-- Tab buttons -->
-        <button class="tabButton active" onclick="switchTab('toolbarTab')">Toolbar</button>
-        <button class="tabButton" onclick="switchTab('viewToolsTab')">View Tools</button>
-    </div>
-
-    <!-- Main toolbar tab content -->
-    <div id="toolbarTab" class="tab active">
-        <div class="toolbar">
-            <!-- Main toolbar content -->
-            <button id="copyButton" class="toolbar-command" data-tool="copy"
-                data-clipboard-activate="true">Copy</button>
-            <button id="cutButton" class="toolbar-command" data-tool="cut" data-clipboard-activate="true">Cut</button>
-            <button id="penTool" class="toolbar-command active" data-tool="pen">Pen</button>
-            <button id="eraserTool" class="toolbar-command " data-tool="eraser">Eraser</button>
-            <button id="shapeTool" class="toolbar-command " data-tool="shapes">Shapes</button>
-            <button id="fillTool" class="toolbar-command" data-tool="fill">Fill</button>
-            <button id="selectTool" class="toolbar-command" data-tool="select">Select</button>
-            <!-- Add more buttons for additional tools if needed -->
-            <label for="lineWidth">Line Width:</label>
-            <select id="lineWidth">
-                <option value="1">1px</option>
-                <option value="3">3px</option>
-                <option value="5" selected>5px</option>
-                <option value="7">7px</option>
-                <option value="8">8px</option>
-                <option value="9">9px</option>
-                <option value="10">10px</option>
-                <option value="11">11px</option>
-                <option value="12">12px</option>
-                <option value="13">13px</option>
-                <option value="14">14px</option>
-                <option value="15">15px</option>
-                <option value="16">16px</option>
-                <option value="17">17px</option>
-                <option value="18">18px</option>
-                <option value="19">19px</option>
-                <option value="20">20px</option>
-            </select>
-            <label for="strokeColor">Stroke Color:</label>
-            <input type="color" id="strokeColor" value="#000000">
+    <div id="toolbar-container">
+        <div class="tabs">
+            <!-- Tab buttons -->
+            <button class="tabButton active" data-tab-id="toolbarTab">Toolbar</button>
+            <button class="tabButton" data-tab-id="viewToolsTab">View Tools</button>
         </div>
-    </div>
 
-    <!-- View tools tab content -->
-    <div id="viewToolsTab" class="tab">
-        <div class="viewTools">
-            <!-- View tools content -->
-            <button id="zoomIn" class="toolbar-command" data-tool="zoomIn">Zoom In</button>
-            <button id="zoomOut" class="toolbar-command" data-tool="zoomOut">Zoom Out</button>
-            <span id="scaleIndicator">Scale: 1x</span>
-            <button class="toolbar-command" data-tool="zoomReset">Zoom Reset</button>
+        <!-- Main toolbar tab content -->
+        <div id="toolbarTab" class="tab active">
+            <div class="toolbar">
+                <!-- Main toolbar content -->
+                <button id="penTool" class="toolbar-command active" data-tool="pen">Pen</button>
+                <button id="eraserTool" class="toolbar-command " data-tool="eraser">Eraser</button>
+                <button id="shapeTool" class="toolbar-command " data-tool="shapes">Shapes</button>
+                <button id="fillTool" class="toolbar-command" data-tool="fill">Fill</button>
+                <button id="selectTool" class="toolbar-command" data-tool="select">Select</button>
+                <!-- Add more buttons for additional tools if needed -->
+                <label for="brushSize">Brush size:</label>
+                <select id="brushSize">
+                    <option value="1">1</option>
+                    <option value="5">5</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="12">12</option>
+                </select>
+                <input type="color" id="foregroundColor" value="#000000">
+                <input type="color" id="backgroundColor" value="#ffffff">
+                <button id="copyButton" class="toolbar-command" data-clipboard-activate="true">Copy</button>
+                <button id="cutButton" class="toolbar-command" data-clipboard-activate="true">Cut</button>
+            </div>
+        </div>
+
+        <!-- View tools tab content -->
+        <div id="viewToolsTab" class="tab">
+            <div class="viewTools">
+                <!-- View tools content -->
+                <button id="zoomIn" class="toolbar-command">Zoom In</button>
+                <button id="zoomOut" class="toolbar-command">Zoom Out</button>
+                <button class="toolbar-command" id="zoomReset">Zoom Reset</button>
+                <span id="scaleIndicator">Scale: 1x</span>
+            </div>
         </div>
     </div>
     <br />
@@ -221,8 +212,26 @@
         <span id="canvas-size" class="canvas-size"></span>
         <input type="range" id="zoom-slider" class="zoom-slider" min="0.1" max="5" step="0.1" value="1">
     </div>
-    <div id="sizeIndicator"></div>
-    <script src="toolbar.js"></script>
+    <div id="bush-size-indicator"></div>
+    <script src="paint-app/extensions/drawing-area-extension.js"></script>
+    <script src="paint-app/extensions/toolbar-extension.js"></script>
+    <script src="paint-app/extensions/drawing-tools/pen-drawing-tool-extension.js"></script>
+    <script src="paint-app/extensions/drawing-tools/eraser-drawing-tool-extension.js"></script>
+    <script src="paint-app/extensions/drawing-tools/select-drawing-tool-extension.js"></script>
+    <script src="paint-app/extensions/drawing-tools/fill-drawing-tool-extension.js"></script>
+
+    <script src="paint-app/extensions/brush-size-indicator.js"></script>
+    <script src="paint-app/extensions/widgets/ui-value-binder.js"></script>
+    <script src="paint-app/extensions/widgets/ui-value-viewer.js"></script>
+    <!--  -->
+    <script src="paint-app/extensions/toolbar/toolbar-button-extension.js"></script>
+    <script src="paint-app/extensions/toolbar/zoom-in-button-extension.js"></script>
+    <script src="paint-app/extensions/toolbar/zoom-out-button-extension.js"></script>
+    <script src="paint-app/extensions/toolbar/zoom-reset-button-extension.js"></script>
+    <script src="paint-app/extensions/toolbar/copy-selection-button-extension.js"></script>
+    <script src="paint-app/extensions/toolbar/cut-selection-button-extension.js"></script>
+    <!--  -->
+    <script src="paint-app/paint-app.js"></script>
     <script src="script.js"></script>
 </body>
 
