@@ -86,6 +86,7 @@ class SelectDrawingToolExtension {
     );
     this.paintApp.fireEvent("drawingArea.overlayCanvas:hide");
     this.paintApp.fireEvent("drawingArea.selection:cleared");
+    this.paintApp.fireEvent("drawingArea.drawing:clearOverlay");
   }
   registerDrawingEvents() {
     this.paintApp.addEventListener(

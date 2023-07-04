@@ -5,6 +5,7 @@ class FillDrawingToolExtension {
     this.drawing = this.drawing.bind(this);
     this.drawingEnd = this.drawingEnd.bind(this);
     this.onDrawingToolChanged = this.onDrawingToolChanged.bind(this);
+    this.active = false;
   }
   init(paintApp) {
     this.paintApp = paintApp;
@@ -14,6 +15,7 @@ class FillDrawingToolExtension {
     );
   }
   drawingStart({ x, y, ctx }) {
+    if (!this.active) return;
     const startX = x;
     const startY = y;
 
@@ -29,7 +31,6 @@ class FillDrawingToolExtension {
     // NOOP
   }
   unregisterDrawingEvents() {
-    if (!this.active) return;
     this.active = false;
     this.paintApp.fireEvent("drawingArea.pointerIcon:change");
     this.paintApp.removeEventListener(
@@ -55,10 +56,11 @@ class FillDrawingToolExtension {
     );
   }
   onDrawingToolChanged(toolName) {
-    this.unregisterDrawingEvents();
     if (toolName === "fill") {
       this.active = true;
       this.registerDrawingEvents();
+    } else if (this.active) {
+      this.unregisterDrawingEvents();
     }
   }
 

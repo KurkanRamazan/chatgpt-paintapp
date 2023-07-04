@@ -2,6 +2,7 @@ class PenDrawingToolExtension {
   constructor() {
     this.paintApp = null;
     this.active = false;
+    this.isDrawing = false;
     this.drawingStart = this.drawingStart.bind(this);
     this.drawing = this.drawing.bind(this);
     this.drawingEnd = this.drawingEnd.bind(this);
@@ -15,10 +16,15 @@ class PenDrawingToolExtension {
     );
   }
   drawingStart({ ctx, x, y }) {
+    if (!this.active) return;
+    this.isDrawing = true;
+    this.paintApp.fireEvent("drawingArea.undoredo:start");
     ctx.beginPath();
     ctx.moveTo(x, y);
   }
   drawing({ ctx, x, y }) {
+    if (!this.active) return;
+    if (!this.isDrawing) return;
     ctx.lineTo(x, y);
     ctx.lineWidth = this.paintApp.brushSize;
     ctx.strokeStyle = this.paintApp.foregroundColor;
@@ -27,11 +33,14 @@ class PenDrawingToolExtension {
     ctx.stroke();
   }
   drawingEnd({ ctx, x, y }) {
-    // NOOP
+    if (!this.active) return;
+    if (!this.isDrawing) return;
+    this.isDrawing = false;
+    this.paintApp.fireEvent("drawingArea.undoredo:end");
   }
   unregisterDrawingEvents() {
-    if (!this.active) return;
     this.active = false;
+    this.isDrawing = false;
     this.paintApp.fireEvent("drawingArea.pointerIcon:change");
     this.paintApp.removeEventListener(
       "drawingArea:drawingStart",
@@ -56,10 +65,11 @@ class PenDrawingToolExtension {
     );
   }
   onDrawingToolChanged(toolName) {
-    this.unregisterDrawingEvents();
     if (toolName === "pen") {
       this.active = true;
       this.registerDrawingEvents();
+    } else if (this.active) {
+      this.unregisterDrawingEvents();
     }
   }
 }

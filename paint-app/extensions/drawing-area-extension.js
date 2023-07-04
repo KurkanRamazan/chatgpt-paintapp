@@ -24,6 +24,11 @@ class DrawingAreaExtension {
     this.onSelectionCreateCopyRequested =
       this.onSelectionCreateCopyRequested.bind(this);
 
+    this.applyUndoState = this.applyUndoState.bind(this);
+    this.applyRedoState = this.applyRedoState.bind(this);
+    this.onStartUndoRedo = this.onStartUndoRedo.bind(this);
+    this.onEndUndoRedo = this.onEndUndoRedo.bind(this);
+
     this.canvas.addEventListener("mousedown", this.startDrawing);
     this.canvas.addEventListener("mousemove", this.draw);
     this.canvas.addEventListener("mouseup", this.stopDrawing);
@@ -73,6 +78,15 @@ class DrawingAreaExtension {
       "drawingArea.drawing:clearOverlay",
       this.onClearOverlayCanvas
     );
+    paintApp.addEventListener(
+      "drawingArea.undoredo:start",
+      this.onStartUndoRedo
+    );
+    paintApp.addEventListener("drawingArea.undoredo:end", this.onEndUndoRedo);
+
+    // Listen to the "undoredo:apply" event
+    this.paintApp.addEventListener("undoredo:undo:apply", this.applyUndoState);
+    this.paintApp.addEventListener("undoredo:redo:apply", this.applyRedoState);
   }
 
   startDrawing(event) {
@@ -240,5 +254,42 @@ class DrawingAreaExtension {
       this.overlayCtx.canvas.width,
       this.overlayCtx.canvas.height
     );
+  }
+
+  applyUndoState(state) {
+    if (state.owner !== "drawing-area-extension") return;
+    const image = new Image();
+    image.onload = () => {
+      this.ctx.drawImage(image, 0, 0);
+    };
+    image.src = state.before;
+  }
+
+  applyRedoState(state) {
+    if (state.owner !== "drawing-area-extension") return;
+    const image = new Image();
+    image.onload = () => {
+      this.ctx.drawImage(image, 0, 0);
+    };
+    image.src = state.after;
+  }
+  onStartUndoRedo() {
+    if (this.undoredoState) {
+      console.error("There is unfinished undoredo state");
+    }
+    this.undoredoState = {
+      owner: "drawing-area-extension",
+      before: this.canvas.toDataURL(),
+    };
+  }
+  onEndUndoRedo() {
+    if (!this.undoredoState) {
+      console.error("There is no unfinished undoredo state");
+      return;
+    }
+    const undoredoState = this.undoredoState;
+    delete this.undoredoState;
+    undoredoState.after = this.canvas.toDataURL();
+    this.paintApp.fireEvent("undoredo:pushState", undoredoState);
   }
 }

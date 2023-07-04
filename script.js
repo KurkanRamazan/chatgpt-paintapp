@@ -48,7 +48,12 @@ var extensions = [
   ),
   //
   new CopySelectionButtonExtension(document.getElementById("copyButton")),
-  new CutSelectionButtonExtension(document.getElementById("cutButton"))
+  new CutSelectionButtonExtension(document.getElementById("cutButton")),
+  //
+  new UndoButtonExtension(document.getElementById("undoButton")),
+  new RedoButtonExtension(document.getElementById("redoButton")),
+  //
+  new UndoRedoManager(),
 ];
 
 var paintApp = new PaintApp();

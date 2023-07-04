@@ -169,6 +169,9 @@
         <div id="toolbarTab" class="tab active">
             <div class="toolbar">
                 <!-- Main toolbar content -->
+                <button id="undoButton" class="toolbar-command">Undo</button>
+                <button id="redoButton" class="toolbar-command">Redo</button>
+                <!--  -->
                 <button id="penTool" class="toolbar-command active" data-tool="pen">Pen</button>
                 <button id="eraserTool" class="toolbar-command " data-tool="eraser">Eraser</button>
                 <button id="shapeTool" class="toolbar-command " data-tool="shapes">Shapes</button>
@@ -230,6 +233,10 @@
     <script src="paint-app/extensions/toolbar/zoom-reset-button-extension.js"></script>
     <script src="paint-app/extensions/toolbar/copy-selection-button-extension.js"></script>
     <script src="paint-app/extensions/toolbar/cut-selection-button-extension.js"></script>
+    <script src="paint-app/extensions/toolbar/undo-button-extension.js"></script>
+    <script src="paint-app/extensions/toolbar/redo-button-extension.js"></script>
+    <!--  -->
+    <script src="paint-app/features/undo-redo-manager.js"></script>
     <!--  -->
     <script src="paint-app/paint-app.js"></script>
     <script src="script.js"></script>

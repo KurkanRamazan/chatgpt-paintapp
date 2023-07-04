@@ -6,6 +6,7 @@ class EraserDrawingToolExtension {
     this.drawingEnd = this.drawingEnd.bind(this);
     this.onDrawingToolChanged = this.onDrawingToolChanged.bind(this);
     this.active = false;
+    this.isDrawing = false;
   }
   init(paintApp) {
     this.paintApp = paintApp;
@@ -15,10 +16,15 @@ class EraserDrawingToolExtension {
     );
   }
   drawingStart({ ctx, x, y }) {
+    if (!this.active) return;
+    this.isDrawing = true;
+    this.paintApp.fireEvent("drawingArea.undoredo:start");
     ctx.beginPath();
     ctx.moveTo(x, y);
   }
   drawing({ ctx, x, y }) {
+    if (!this.active) return;
+    if (!this.isDrawing) return;
     ctx.lineTo(x, y);
     ctx.lineWidth = this.paintApp.brushSize;
     ctx.strokeStyle = this.paintApp.backgroundColor;
@@ -27,11 +33,14 @@ class EraserDrawingToolExtension {
     ctx.stroke();
   }
   drawingEnd({ ctx, x, y }) {
-    // NOOP
+    if (!this.active) return;
+    if (!this.isDrawing) return;
+    this.isDrawing = false;
+    this.paintApp.fireEvent("drawingArea.undoredo:end");
   }
   unregisterDrawingEvents() {
-    if (!this.active) return;
     this.active = false;
+    this.isDrawing = false;
     this.paintApp.fireEvent("drawingArea.pointerIcon:change");
     this.paintApp.removeEventListener(
       "drawingArea:drawingStart",
@@ -56,10 +65,11 @@ class EraserDrawingToolExtension {
     );
   }
   onDrawingToolChanged(toolName) {
-    this.unregisterDrawingEvents();
     if (toolName === "eraser") {
       this.active = true;
       this.registerDrawingEvents();
+    } else if (this.active) {
+      this.unregisterDrawingEvents();
     }
   }
 }
