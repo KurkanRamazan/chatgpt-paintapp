@@ -167,8 +167,10 @@ function updateCanvasTransform() {
 }
 function updateOverlayCanvasTransform() {
   overlayCanvas.style.transform = `scale(${scale})`;
-  var marginTop = (overlayCanvas.offsetHeight * scale - overlayCanvas.offsetHeight) / 2;
-  var marginLeft = (overlayCanvas.offsetWidth * scale - overlayCanvas.offsetWidth) / 2;
+  var marginTop =
+    (overlayCanvas.offsetHeight * scale - overlayCanvas.offsetHeight) / 2;
+  var marginLeft =
+    (overlayCanvas.offsetWidth * scale - overlayCanvas.offsetWidth) / 2;
   overlayCanvas.style.marginTop = `${marginTop}px`;
   overlayCanvas.style.marginLeft = `${marginLeft}px`;
 }
@@ -210,8 +212,26 @@ function showOverlayCanvas() {
 function hideOverlayCanvas() {
   overlayCanvas.classList.remove("active");
 }
+
+// Helper function to show elements with the "data-clipboard-activate" attribute
+function showClipboardActivateElements() {
+  var elements = document.querySelectorAll("[data-clipboard-activate]");
+  elements.forEach(function (element) {
+    element.style.display = "inline-block";
+  });
+}
+
+// Helper function to hide elements with the "data-clipboard-activate" attribute
+function hideClipboardActivateElements() {
+  var elements = document.querySelectorAll("[data-clipboard-activate]");
+  elements.forEach(function (element) {
+    element.style.display = "none";
+  });
+}
+
 // Call the clearCanvas function to clear the canvas initially
 clearCanvas();
 
 activateTool("pen");
 updateCanvasSize();
+hideClipboardActivateElements();

@@ -184,6 +184,7 @@ var toolbarActions = {
       this.startX = x;
       this.startY = y;
       this.selecting = true;
+      showClipboardActivateElements(); // Call the function to show elements with data-clipboard-activate attribute
     },
     drawEnd: function (ctx, event) {
       if (!this.selecting) return;
@@ -230,6 +231,8 @@ var toolbarActions = {
     beforeChange() {
       hideOverlayCanvas();
       this.selectedRect = false;
+      this.selecting = false;
+      hideClipboardActivateElements(); // Call the function to hide elements with data-clipboard-activate attribute
     },
     cursorImage: "./assets/toolbar-actions/select/images/cursor-icon.png",
   },
