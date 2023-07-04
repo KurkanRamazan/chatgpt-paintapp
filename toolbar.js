@@ -236,7 +236,7 @@ var toolbarActions = {
   copy: {
     command() {
       if (!toolbarActions.select.selectedRect) return;
-      this.copyAsImage();
+      return this.copyAsImage();
     },
     getCopyCanvas() {
       if (!toolbarActions.select.selectedRect) return;
@@ -262,7 +262,7 @@ var toolbarActions = {
       var dataURL = tempCanvas.toDataURL();
 
       // Copy the data URL to the clipboard
-      navigator.clipboard
+      return navigator.clipboard
         .writeText(dataURL)
         .then(function () {
           console.log("Selected area copied to clipboard.");
@@ -276,18 +276,25 @@ var toolbarActions = {
       var tempCanvas = this.getCopyCanvas();
       if (!tempCanvas) return;
 
-      //tested on chrome 76
-      tempCanvas.toBlob(function (blob) {
-        const item = new ClipboardItem({ "image/png": blob });
-        navigator.clipboard
-          .write([item])
-          .then(function () {
-            console.log("Selected area copied to clipboard.");
-          })
-          .catch(function (error) {
-            console.error("Failed to copy selected area to clipboard:", error);
-            alert(error);
-          });
+      return new Promise((pres, prej) => {
+        //tested on chrome 76
+        tempCanvas.toBlob(function (blob) {
+          const item = new ClipboardItem({ "image/png": blob });
+          navigator.clipboard
+            .write([item])
+            .then(function () {
+              console.log("Selected area copied to clipboard.");
+              pres();
+            })
+            .catch(function (error) {
+              console.error(
+                "Failed to copy selected area to clipboard:",
+                error
+              );
+              alert(error);
+              prej(error);
+            });
+        });
       });
     },
     getSelectedArea() {
@@ -301,6 +308,16 @@ var toolbarActions = {
       var height = endY - startY;
 
       return { x: startX, y: startY, width: width, height: height };
+    },
+  },
+  cut: {
+    async command() {
+      var { x, y, width, height } = toolbarActions.select.selectedRect; //this.getSelectedArea();
+      try {
+        await toolbarActions.copy.command();
+        ctx.clearRect(x, y, width, height);
+        toolbarActions.select.beforeChange();
+      } catch (error) {}
     },
   },
 };
