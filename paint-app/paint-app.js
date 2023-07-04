@@ -38,6 +38,7 @@ class PaintApp {
   }
 
   setDrawingTool(toolName) {
+    this.fireEvent("paintApp.drawingTool:changed", "$NOPE");
     this.drawingTool = toolName;
     this.fireEvent("paintApp.drawingTool:changed", toolName);
   }

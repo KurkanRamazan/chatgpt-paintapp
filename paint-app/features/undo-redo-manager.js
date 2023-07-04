@@ -6,6 +6,7 @@ class UndoRedoManager {
     this.pushState = this.pushState.bind(this);
     this.tryToUndo = this.tryToUndo.bind(this);
     this.tryToRedo = this.tryToRedo.bind(this);
+    window.$UndoRedoManager = this;
   }
 
   init(paintApp) {
@@ -20,6 +21,7 @@ class UndoRedoManager {
     this.undoStack.push(state);
     // Clear the redo stack when a new state is pushed
     this.redoStack = [];
+    console.log("UndoRedo state pushed", this.undoStack.length);
   }
 
   // Method to undo the last drawing action

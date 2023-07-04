@@ -21,6 +21,8 @@ class DrawingAreaExtension {
     this.onDrawingClearSelected = this.onDrawingClearSelected.bind(this);
     this.onClearOverlayCanvas = this.onClearOverlayCanvas.bind(this);
 
+    this.onRedrawRequested = this.onRedrawRequested.bind(this);
+
     this.onSelectionCreateCopyRequested =
       this.onSelectionCreateCopyRequested.bind(this);
 
@@ -82,6 +84,11 @@ class DrawingAreaExtension {
       "drawingArea.undoredo:start",
       this.onStartUndoRedo
     );
+    paintApp.addEventListener(
+      "drawingArea.drawing:redraw",
+      this.onRedrawRequested
+    );
+
     paintApp.addEventListener("drawingArea.undoredo:end", this.onEndUndoRedo);
 
     // Listen to the "undoredo:apply" event
@@ -92,6 +99,12 @@ class DrawingAreaExtension {
   startDrawing(event) {
     this.isDrawing = true;
     const { x, y } = this.calculateScaledCoordinates(event);
+    this.lastCoordinate = {
+      x,
+      y,
+      clientX: event.clientX,
+      clientY: event.clientY,
+    };
     this.paintApp.fireEvent("drawingArea.pointerPosition:changed", {
       x,
       y,
@@ -109,6 +122,12 @@ class DrawingAreaExtension {
 
   draw(event) {
     const { x, y } = this.calculateScaledCoordinates(event);
+    this.lastCoordinate = {
+      x,
+      y,
+      clientX: event.clientX,
+      clientY: event.clientY,
+    };
     this.paintApp.fireEvent("drawingArea.pointerPosition:changed", {
       x,
       y,
@@ -128,6 +147,12 @@ class DrawingAreaExtension {
   stopDrawing(event) {
     this.isDrawing = false;
     const { x, y } = this.calculateScaledCoordinates(event);
+    this.lastCoordinate = {
+      x,
+      y,
+      clientX: event.clientX,
+      clientY: event.clientY,
+    };
     this.paintApp.fireEvent("drawingArea.pointerPosition:changed", {
       x,
       y,
@@ -291,5 +316,13 @@ class DrawingAreaExtension {
     delete this.undoredoState;
     undoredoState.after = this.canvas.toDataURL();
     this.paintApp.fireEvent("undoredo:pushState", undoredoState);
+  }
+  onRedrawRequested() {
+    this.paintApp.fireEvent("drawingArea:drawing", {
+      ctx: this.ctx,
+      overlayCtx: this.overlayCtx,
+      x: this.lastCoordinate.x,
+      y: this.lastCoordinate.y,
+    });
   }
 }

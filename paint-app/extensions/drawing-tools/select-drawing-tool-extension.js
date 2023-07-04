@@ -35,7 +35,7 @@ class SelectDrawingToolExtension {
     );
   }
   clearOverlay({ overlayCtx }) {
-    overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+    overlayCtx.clearRect(0, 0, overlayCtx.canvas.width, overlayCtx.canvas.height);
   }
   drawGhost({ overlayCtx, x, y }) {
     var startX = this.startX;
@@ -53,7 +53,7 @@ class SelectDrawingToolExtension {
       endY = t;
     }
 
-    overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+    overlayCtx.clearRect(0, 0, overlayCtx.canvas.width, overlayCtx.canvas.height);
     overlayCtx.setLineDash([5, 5]); 
     overlayCtx.beginPath();
     overlayCtx.rect(startX, startY, endX - startX, endY - startY);

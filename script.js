@@ -54,6 +54,10 @@ var extensions = [
   new RedoButtonExtension(document.getElementById("redoButton")),
   //
   new UndoRedoManager(),
+  //
+  new StarShapeDrawingToolExtension(40, 5),
+  new StarShapeDrawingToolExtension(40, 6),
+  new StarShapeDrawingToolExtension(40, 12),
 ];
 
 var paintApp = new PaintApp();
